@@ -178,13 +178,15 @@ FS.StorageAdapter = function(name, options, api) {
   self.adapter.remove = function(fileObj, callback) {
     FS.debug && console.log("---SA REMOVE");
 
-    // We throw an error if fileObj is not a FS.File instance
-    // Except: if this is used as an internal SA - we then expect fileKey
-    // if (!self.internal && !(fileObj instanceof FS.File))
-    //   throw new Error('Storage adapter "' + name + '" remove requires fileObj');
-
     // Get the fileKey
-    var fileKey = (fileObj instanceof FS.File)? api.fileKey(fileObj) : fileObj;
+    var fileKey;
+    if (fileObj instanceof FS.File) {
+      var copyInfo = fileObj.getCopyInfo(self.storeName);
+      fileKey = copyInfo && copyInfo.key ? copyInfo.key : self.storage.fileKey(fileObj);
+    } else {
+      // internal storage uses a fileKey only
+      fileKey = fileObj;
+    }
 
     if (callback) {
       return self._removeAsync(fileKey, FS.Utility.safeCallback(callback));
