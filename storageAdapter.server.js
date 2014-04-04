@@ -48,6 +48,7 @@ FS.StorageAdapter = function(name, options, api) {
   // This supports optional transformWrite and transformRead
   self._transform = new FS.Transform({
     store: api,
+    storeName: name,
     // Optional transformation functions:
     transformWrite: options.transformWrite,
     transformRead: options.transformRead
@@ -76,7 +77,7 @@ FS.StorageAdapter = function(name, options, api) {
 
   // Return readable stream
   self.adapter.createWriteStream = function(fileObj, options) {
-    FS.debug && console.log('createWriteStream ' + self.name + ', internal: ' + self.internal);
+    FS.debug && console.log('createWriteStream ' + self.name + ', internal: ' + !!self.internal);
     var writeStream;
 
     if (self.internal) {

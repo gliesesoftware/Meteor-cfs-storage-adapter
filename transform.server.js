@@ -12,7 +12,8 @@ FS.Transform = function(options) {
     throw new Error('Transform expects option.store to be a storage adapter');
 
   // Support both Storage adapter and internal SA api
-  self.storage = (options.store.adapter)?options.store.adapter: options.store;
+  self.storage = options.store.adapter || options.store;
+  self.storeName = options.storeName;
 
   // Fetch the transformation functions if any
   self.transformWrite = options.transformWrite;
@@ -27,8 +28,10 @@ FS.Transform.scope = {};
 FS.Transform.prototype.createWriteStream = function(fileObj, options) {
   var self = this;
 
-  // Get the file key
-  var fileKey = self.storage.fileKey(fileObj);
+  // If this fileObj has been stored before, we use the key that was generated at that time.
+  // Otherwise, we have the SA generate a new key.
+  var copyInfo = fileObj.getCopyInfo(self.storeName);
+  var fileKey = copyInfo && copyInfo.key ? copyInfo.key : self.storage.fileKey(fileObj);
 
   // Rig write stream
   var destinationStream = self.storage.createWriteStream(fileKey, {
@@ -72,15 +75,10 @@ FS.Transform.prototype.createWriteStream = function(fileObj, options) {
 FS.Transform.prototype.createReadStream = function(fileObj, options) {
   var self = this;
 
-  // XXX: We can check the copy info, but the readstream wil fail no matter what
-  // var fileInfo = fileObj.getCopyInfo(name);
-  // if (!fileInfo) {
-  //   return new Error('File not found on this store "' + name + '"');
-  // }
-  // var fileKey = folder + fileInfo.key;
-
-  // Get the file key
-  var fileKey = self.storage.fileKey(fileObj);
+  // If this fileObj has been stored before, we use the key that was generated at that time.
+  // Otherwise, we have the SA generate the key (but the file will probably not exist?).
+  var copyInfo = fileObj.getCopyInfo(self.storeName);
+  var fileKey = copyInfo && copyInfo.key ? copyInfo.key : self.storage.fileKey(fileObj);
 
   // Rig read stream
   var sourceStream = self.storage.createReadStream(fileKey, options);
