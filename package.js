@@ -1,8 +1,8 @@
 Package.describe({
-  git: 'https://github.com/CollectionFS/Meteor-cfs-storage-adapter.git',
-  name: 'cfs:storage-adapter',
-  version: '0.1.1',
-  summary: 'CollectionFS, Class for creating Storage adapters'
+  git: 'https://github.com/gliesesoftware/cfs-storage.git',
+  name: 'gliese:cfs-storage',
+  version: '0.1.2',
+  summary: 'Gliese flavor of the CollectionFS class for creating Storage adapters (INTERNAL USE ONLY)'
 });
 
 Package.onUse(function(api) {
@@ -10,7 +10,7 @@ Package.onUse(function(api) {
 
   api.use([
     // CFS
-    'cfs:base-package@0.0.27',
+    'gliese:cfs-base@0.0.28',
     // Core
     'deps',
     'check',
@@ -36,7 +36,7 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function (api) {
-  api.use('cfs:storage-adapter');
+  api.use('gliese:cfs-storage');
   api.use('test-helpers', 'server');
   api.use(['tinytest', 'underscore', 'ejson', 'ordered-dict',
            'random', 'deps']);
