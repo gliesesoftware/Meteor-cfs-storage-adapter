@@ -45,7 +45,10 @@ FS.Transform.prototype.createWriteStream = function(fileObj, options) {
     // is also available to those
     aliases: [fileObj.name()],
     contentType: fileObj.type(),
-    metadata: fileObj.metadata
+    metadata: { 
+               fileStreamId: fileObj.fileStreamId,
+               queueId: fileObj.queueId
+             }
   });
 
   if (typeof self.transformWrite === 'function') {
